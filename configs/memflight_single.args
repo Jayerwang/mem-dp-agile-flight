@@ -1,0 +1,17 @@
+--single
+--speed_mtp 5
+--coef_d_acc 0.01
+--coef_d_jerk 0.001
+--ground_voxels
+--random_rotation
+--yaw_drift
+--coef_collide 6.0
+--coef_obj_avoidance 2.5
+--coef_speed 0.2
+--coef_sigma 0.05
+--cam_angle 20
+--fov_x_half_tan 0.82
+--coef_mem 0.25
+--memory_k 4
+--perception_noise 0.02
+--ckpt_every 2000

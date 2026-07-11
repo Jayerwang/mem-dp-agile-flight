@@ -1,0 +1,18 @@
+--single
+--speed_mtp 4.0
+--batch_size 64
+--timesteps 150
+--coef_d_acc 0.01
+--coef_d_jerk 0.001
+--ground_voxels
+--random_rotation
+--yaw_drift
+--coef_collide 7.5
+--coef_obj_avoidance 3.0
+--cam_angle 20
+--fov_x_half_tan 0.82
+--recon_members 1 1 0
+--recon_steps 12
+--recon_coef_past 0.10
+--recon_coef_cur 0.05
+--num_iters 50000

@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Native/CUDA build outputs
+build/
+dist/
+*.so
+*.pyd
+*.dll
+*.o
+
+# Training outputs
+runs/
+retrain_runs/
+backup_checkpoints/
+outputs/
+logs/
+wandb/
+tensorboard/
+*.log
+
+# Generated media
+gifs/
+videos/
+*.mp4
+*.avi
+*.gif
+
+# Large simulators / external validation packages
+LinuxNoEditor/
+validation/
+
+# Local/editor files
+.idea/
+.vscode/
+.DS_Store
+
