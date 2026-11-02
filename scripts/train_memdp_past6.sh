@@ -49,7 +49,6 @@ COMMON=(
   --fov_x_half_tan 0.82
   --timesteps "$TIMESTEPS"
   --cam_angle 20
-  --curriculum_window 50
   --fixed_curriculum_phase 2
   --seed "$SEED"
   --ground_voxels

@@ -9,9 +9,6 @@
 
 在实验使用的 15 Hz 控制频率下，6步历史偏移约对应0.4秒。
 
-/^### /i
-/^    @article/i
-/^历史重建辅助监督/i
 ## 一、最终模型配置
 
 ```text
@@ -25,9 +22,6 @@ phase2_recon        on
 训练随机种子        20261028
 ```
 重建解码器仅用于训练阶段的辅助监督。实际飞行动作由循环策略及动作头输出。
-/^### /i
-/^    @article/i
-/^历史重建辅助监督/i
 ## 二、目录结构
 ```text
 memdp/
@@ -69,9 +63,6 @@ weights/
 
 memdpflight/ 是仓库早期实现，为保持历史兼容性而保留。新的训练和
 评测实验应优先使用 memdp/、`evaluation/` 和 scripts/。
-/^### /i
-/^    @article/i
-/^历史重建辅助监督/i
 ## 三、运行环境
 本仓库已在以下环境中完成验证：
 - Python 3.10.20
@@ -88,18 +79,12 @@ memdpflight/ 是仓库早期实现，为保持历史兼容性而保留。新的�
     pip install -e src
 检查 CUDA 扩展：
     python src/test.py
-/^### /i
-/^    @article/i
-/^历史重建辅助监督/i
 ## 四、校验发布权重
     cd weights
     sha256sum -c SHA256SUMS
     cd ..
 正常情况下，三个文件均应显示：
     OK
-/^### /i
-/^    @article/i
-/^历史重建辅助监督/i
 ## 五、训练最终 MemDP Past-6
 ### 5.1 冒烟测试
 冒烟测试仅用于检查训练代码、阶段切换和权重保存能否正常运行：
@@ -126,9 +111,6 @@ memdpflight/ 是仓库早期实现，为保持历史兼容性而保留。新的�
     python -m memdp.train
 该命令采用通用默认参数，并不等于论文实验配置。正式复现应使用
 scripts/train_memdp_past6.sh。
-/^### /i
-/^    @article/i
-/^历史重建辅助监督/i
 ## 六、历史深度跨度消融实验
 执行完整消融：
     bash scripts/train_span_ablation.sh quick 20261028
@@ -151,9 +133,6 @@ scripts/train_memdp_past6.sh。
 详细定义见：
 
 [历史跨度实验说明](docs/MEMORY_SPAN_EXPERIMENT.md)
-/^### /i
-/^    @article/i
-/^历史重建辅助监督/i
 ## 七、三类环境配对评测
 运行 Original DP 与 MemDP Past-6 的正式对比：
     bash scripts/evaluate_all_scenes.sh
@@ -178,9 +157,6 @@ scripts/train_memdp_past6.sh。
 - 最终目标距离；
 - 单轨迹评测记录。
 生成结果保存在 results/ 下，该目录默认不提交到 Git。
-/^### /i
-/^    @article/i
-/^历史重建辅助监督/i
 ## 八、已完成的复现检查
 当前发布版本已经完成以下验证：
 - Original DP 权重严格加载；
@@ -193,9 +169,6 @@ scripts/train_memdp_past6.sh。
 - 场景哈希配对审计；
 - 核心复现文件的服务器绝对路径清理；
 - 权重 SHA-256 完整性校验。
-/^### /i
-/^    @article/i
-/^历史重建辅助监督/i
 ## 九、实验范围说明
 本仓库的配对实验运行于轻量级 CUDA 可微物理环境，适合进行：
 - 控制变量消融；
@@ -203,9 +176,6 @@ scripts/train_memdp_past6.sh。
 - 大规模配对轨迹测试；
 - 快速训练与评测迭代。
 该环境的结果不应直接表述为 Flightmare 高保真仿真结果或真实无人机实验结果。
-/^### /i
-/^    @article/i
-/^历史重建辅助监督/i
 ## 十、致谢
 本项目基于以下工作公开的训练框架：
     @article{zhang2025learning,

@@ -26,7 +26,7 @@ case "$MODE" in
     TIMESTEPS=150
     ;;
   *)
-    echo "用法：bash run_singlehead_span.sh smoke|quick [seed]"
+    echo "用法：bash scripts/train_span_ablation.sh smoke|quick [seed]"
     exit 2
     ;;
 esac
@@ -49,7 +49,6 @@ COMMON=(
   --fov_x_half_tan 0.82
   --timesteps "$TIMESTEPS"
   --cam_angle 20
-  --curriculum_window 50
   --fixed_curriculum_phase 2
   --seed "$SEED"
   --ground_voxels

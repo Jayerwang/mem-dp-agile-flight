@@ -1,12 +1,13 @@
-# V63 单头记忆重建跨度消融
+# MemDP单解码头历史跨度消融实验
 
 共同起点：
 weights/checkpoint_phase0_done.pth
 
 共同训练日程：
-- Phase 1：15000步，冻结动作头fc；训练stem、v_proj、GRU和decoder
-- Phase 2：5000步，全参数联合训练
-- 所有组总计20000步
+- 共享起点：加载已经训练完成的Phase 0权重，本轮不重复训练Phase 0
+- Phase 1：3000次有效更新，冻结动作头fc；训练stem、v_proj、GRU和decoder
+- Phase 2：2000次有效更新，全参数联合训练
+- 本轮新增训练总计5000次更新
 - 控制损失在两个阶段始终启用
 - No-Recon也采用相同阶段、步数和冻结日程
 
@@ -42,3 +43,16 @@ weights/checkpoint_phase0_done.pth
 - coef_speed=0.0
 
 第一轮训练种子：20261028
+
+
+## 阶段定义
+
+Phase 1和Phase 2表示参数冻结与解冻的优化阶段，不等同于环境难度课程。
+正式实验通过`fixed_curriculum_phase=2`固定使用最高难度环境，不进行自适应
+环境阶段切换。Phase 2对应的损失权重倍率仍按原训练实现生效。
+
+在15 Hz控制频率下：
+
+- Past-6约对应0.4 s历史跨度；
+- Past-12约对应0.8 s历史跨度；
+- Past-24约对应1.6 s历史跨度。

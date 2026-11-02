@@ -1,13 +1,16 @@
-"""
-main_cuda.py  ——  修改版
-在原始训练循环基础上新增：
-  1. CurriculumScheduler   : MAVRL 风格三阶段课程调度
-  2. set_training_phase()  : 阶段性冻结/解冻模型子模块
-  3. 记忆重建损失           : past + current 帧重建（对应 MAVRL [1,1,0]）
-  4. 动态损失权重           : 随课程阶段调整 coef_v / coef_collide
-  5. v_scale_head 集成      : 目标速度动态缩放（可选，由 --enable_v_scale 控制）
+"""MemDP及其重建消融实验的统一训练入口。
 
-原有可微物理引擎（CUDA kernel）、Env、Model 调用接口完全不变。
+论文最终配置：
+1. 加载共享的Phase 0起点权重；
+2. 执行3000次记忆适配更新，并冻结动作头；
+3. 执行2000次全参数联合更新；
+4. 仅重建6步前的历史深度，重建系数为0.15；
+5. 固定环境课程阶段为phase 2；
+6. 关闭当前深度重建和速度缩放分支。
+
+参数优化阶段与环境课程阶段是两个不同概念。自适应环境阶段切换、当前深度
+目标及速度缩放仅为消融实验和旧实验兼容保留。固定phase 2时，相应的损失
+权重倍率仍按照原训练实现生效。
 """
 
 from collections import defaultdict, deque
@@ -27,12 +30,12 @@ from .model import Model
 
 best_success_rate = 0.0
 # =============================================================================
-# ① CurriculumScheduler
+# ① 可选的环境难度CurriculumScheduler
 # =============================================================================
 
 class CurriculumScheduler:
     """
-    MAVRL 风格三阶段渐进课程。
+    可选的三阶段环境难度调度；论文正式配置固定为phase 2，不进行自适应切换。
 
     phase 0  easy   : 30% 障碍密度，速度损失 ×1.5，碰撞损失 ×0.8
     phase 1  medium : 60% 障碍密度，原始系数
@@ -89,7 +92,7 @@ class CurriculumScheduler:
 
 
 # =============================================================================
-# ② set_training_phase
+# ② 参数冻结与解冻的优化阶段
 # =============================================================================
 
 def set_training_phase(model: Model, phase: int, verbose: bool = True) -> None:

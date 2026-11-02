@@ -1,12 +1,7 @@
-"""
-model.py  ——  修改版
-在原始 Model 基础上新增：
-  1. recon_decoder   : 记忆重建解码器 (输入192，输出48像素)
-  2. v_scale_head    : 轻量速度缩放头（通过 detach 隔离梯度）
-  3. decode()        : 供训练循环调用的重建接口
-  4. forward() 支持返回 v_scale（可选）
+"""MemDP论文复现所使用的网络结构。
 
-原有逻辑（stem / v_proj / gru / fc）完全不动，确保能完美加载 Checkpoint。
+论文最终模型仅启用Past-6历史深度重建，历史跨度为6步，关闭当前深度重建
+和速度缩放分支。其他重建目标与速度缩放功能仅为消融实验和旧实验兼容保留。
 """
 
 import torch
@@ -19,11 +14,11 @@ def g_decay(x, alpha):
 class Model(nn.Module):
     def __init__(
         self,
-        dim_obs: int = 9,
-        dim_action: int = 4,
-        recon_members: tuple = (True, True, False),
-        recon_steps: int = 12,
-        enable_v_scale: bool = True,
+        dim_obs: int = 10,
+        dim_action: int = 6,
+        recon_members: tuple = (True, False, False),
+        recon_steps: int = 6,
+        enable_v_scale: bool = False,
     ) -> None:
         super().__init__()
 
@@ -62,7 +57,8 @@ class Model(nn.Module):
             if hasattr(layer, 'weight'):
                 layer.weight.data.mul_(0.1)
 
-        # ── 新增：轻量速度缩放头 ──────────────────────────────
+        # 可选的历史实验分支；论文正式实验均关闭该功能
+        # ── 轻量速度缩放头 ──────────────────────────────
         self.enable_v_scale = enable_v_scale
         if enable_v_scale:
             self.v_scale_head = nn.Sequential(
@@ -105,17 +101,22 @@ class Model(nn.Module):
 # ── 单元测试 ────────────────────
 if __name__ == '__main__':
     B = 4
-    model = Model(dim_obs=9, dim_action=6, enable_v_scale=True)
+    model = Model(
+        dim_obs=10,
+        dim_action=6,
+        recon_members=(True, False, False),
+        recon_steps=6,
+        enable_v_scale=False,
+    )
 
     x  = torch.randn(B, 1, 12, 16)
-    v  = torch.randn(B, 9)
+    v  = torch.randn(B, 10)
     hx = None
 
-    act, _, hx, v_scale = model(x, v, hx)
+    act, _, hx = model(x, v, hx)
     print(f"act shape    : {act.shape}")       # (4, 6)
     print(f"hx  shape    : {hx.shape}")        # (4, 192)
-    print(f"v_scale range: {v_scale.min():.3f} ~ {v_scale.max():.3f}")
 
     recon = model.decode(hx)
     print(f"recon shape  : {recon.shape}")     # (4, 48)  <-- 修改为 48 维了！
-    print("model.py 单元测试通过 ✓")
+    print("MemDP Past-6 model test passed")
